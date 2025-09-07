@@ -2,7 +2,7 @@
 
 A modern, TypeScript-based ecommerce frontend. This app provides product browsing, cart management, checkout flows, and customer experiences. It is designed to work with a companion NestJS backend.
 
-- Backend repository: [NestJS Backend Repository](https://github.com/your-org/your-backend-repo) — replace with your actual URL
+- Backend repository: [NestJS Backend Repository](https://github.com/abdulbasit0-UI/nestjs-ecommerce-backend/) — replace with your actual URL
 
 ### Features
 - Product listing, detail pages, and search
