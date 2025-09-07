@@ -18,7 +18,7 @@ A modern, TypeScript-based ecommerce frontend. This app provides product browsin
 
 ### Prerequisites
 - Node.js 18+ and npm 9+
-- A running backend API (NestJS). See: [NestJS Backend Repository](https://github.com/your-org/your-backend-repo)
+- A running backend API (NestJS). See: [NestJS Backend Repository](https://github.com/abdulbasit0-UI/nestjs-ecommerce-backend/)
 
 ### Getting Started
 1) Clone the repository
