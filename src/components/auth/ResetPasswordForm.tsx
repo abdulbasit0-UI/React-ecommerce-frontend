@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../ui/button';
@@ -10,6 +9,7 @@ import { Label } from '../ui/label';
 import LoadingSpinner from '../layout/LoadingSpinner';
 import { resetPassword } from '../../store/slices/authSlice';
 import { resetPasswordSchema } from '@/lib/validation';
+import { useAppDispatch } from '../../store/store';
 
 interface ResetPasswordFormData {
   newPassword: string;
@@ -19,7 +19,7 @@ interface ResetPasswordFormData {
 export default function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -41,7 +41,7 @@ export default function ResetPasswordForm() {
     try {
       await dispatch(resetPassword({ newPassword: data.newPassword, token })).unwrap();
       navigate('/login');
-    } catch (error) {
+    } catch {
       // Error is handled in the slice
     }
   };

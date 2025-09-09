@@ -1,5 +1,5 @@
 import { type ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import {
@@ -30,6 +30,24 @@ interface CategoryTableProps {
 
 export default function CategoryTable({ data, isLoading, onEdit, onDelete }: CategoryTableProps) {
   const columns: ColumnDef<Category>[] = [
+    {
+      accessorKey: 'image',
+      header: 'Image',
+      cell: ({ row }) => {
+        const image = row.getValue<string>('image');
+        return image ? (
+          <img
+            src={image}
+            alt={row.getValue('name')}
+            className="h-10 w-10 rounded-lg object-cover"
+          />
+        ) : (
+          <div className="h-10 w-10 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+            <ImageIcon className="h-5 w-5 text-gray-500" />
+          </div>
+        );
+      },
+    },
     {
       accessorKey: 'name',
       header: 'Name',

@@ -3,7 +3,6 @@ import { type CreateOrderDto, type OrderResponseDto, type CheckoutSession } from
 
 export const orderApi = {
   createOrder: async (data: CreateOrderDto) => {
-    console.log(data)
     const response = await api.post('/orders', data);
     return response.data as OrderResponseDto;
   },
@@ -22,7 +21,6 @@ export const orderApi = {
 
   getOrders: async () => {
     const response = await api.get('/orders');
-    console.log(response.data);
     return response.data as OrderResponseDto[];
   },
 

@@ -1,6 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import LoadingSpinner from '../layout/LoadingSpinner';
 import type { RootState } from '@/store/store';
 
 interface ProtectedRouteProps {
@@ -10,8 +9,6 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
-  console.log(user);
-  console.log(isAuthenticated)
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

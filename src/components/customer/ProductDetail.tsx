@@ -1,25 +1,34 @@
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Star, Heart, ShoppingCart, Truck, Shield, RefreshCw } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { useProduct } from '../../hooks/useProducts';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../../store/slices/cartSlice';
+import { useAddCartItem } from '@/hooks/useCart';
 import LoadingSpinner from '../../components/layout/LoadingSpinner';
 import ProductInfo from './product/ProductInfo';
 import ProductReviews from './product/ProductReviews';
 import ProductImages from './product/ProductImages';
 import RelatedProducts from './product/RelatedProducts';
-import { Helmet } from 'react-helmet';
+import { useAddToWishlist, useRemoveFromWishlist, useUserWishlist } from '../../hooks/useUser';
+import { useProductRating } from '../../hooks/useReviews';
+import { toast } from 'sonner';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useDispatch();
+  const addCartItem = useAddCartItem();
   const { data: product, isLoading } = useProduct(id!);
+  const { rating: averageRating, reviewCount } = useProductRating(id!);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [isLiked, setIsLiked] = useState(false);
+  const { data: wishlist = [] } = useUserWishlist();
+  const addToWishlist = useAddToWishlist();
+  const removeFromWishlist = useRemoveFromWishlist();
+  const [isToggling, setIsToggling] = useState(false);
+
+  const isLiked = useMemo(() => {
+    return wishlist?.some((p) => p.id === product?.id) ?? false;
+  }, [wishlist, product?.id]);
 
   if (isLoading) {
     return (
@@ -39,17 +48,12 @@ export default function ProductDetail() {
     );
   }
 
-  const handleAddToCart = () => {
-    dispatch(addToCart({
-      product: {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        images: product.images,
-        stock: product.stock || 0,
-      },
-      quantity,
-    }));
+  const handleAddToCart = async () => {
+    try {
+      await addCartItem.mutateAsync({ productId: product.id, quantity });
+    } catch {
+      // errors are surfaced via toast in the hook
+    }
   };
 
   const handleBuyNow = () => {
@@ -96,11 +100,17 @@ export default function ProductDetail() {
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                    className={`h-4 w-4 ${
+                      i < Math.floor(averageRating) 
+                        ? 'fill-yellow-400 text-yellow-400' 
+                        : 'text-gray-300 dark:text-gray-600'
+                    }`}
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">(4.8) • 124 reviews</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                ({averageRating.toFixed(1)}) • {reviewCount} reviews
+              </span>
             </div>
           </div>
 
@@ -145,7 +155,7 @@ export default function ProductDetail() {
               size="lg"
               className="flex-1 bg-primary hover:bg-primary/90"
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              disabled={product.stock === 0 || addCartItem.isPending}
             >
               <ShoppingCart className="mr-2 h-4 w-4" />
               Add to Cart
@@ -153,7 +163,23 @@ export default function ProductDetail() {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => setIsLiked(!isLiked)}
+              onClick={async () => {
+                if (!product || isToggling) return;
+                try {
+                  setIsToggling(true);
+                  if (isLiked) {
+                    await removeFromWishlist.mutateAsync(product.id);
+                    toast.success('Removed from wishlist');
+                  } else {
+                    await addToWishlist.mutateAsync(product.id);
+                    toast.success('Added to wishlist');
+                  }
+                } catch {
+                  toast.error('Failed to update wishlist');
+                } finally {
+                  setIsToggling(false);
+                }
+              }}
               className={isLiked ? 'border-red-500 text-red-500' : ''}
             >
               <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />

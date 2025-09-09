@@ -7,6 +7,7 @@ import Checkout from '@/components/customer/Checkout';
 import ProductDetail from '@/components/customer/ProductDetail';
 import OrderSuccess from '@/components/customer/OrderSuccess';
 import UserAccount from '@/components/customer/UserAccount';
+import Wishlist from '@/components/customer/Wishlist';
 
 export default function CustomerRoutes() {
   return (
@@ -19,6 +20,7 @@ export default function CustomerRoutes() {
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="order-success" element={<OrderSuccess />} />
+        <Route path="wishlist" element={<Wishlist />} />
         <Route path="categories" element={<Shop />} />
         <Route path="categories/:category" element={<Shop />} />
         <Route path="brands" element={<Shop />} />

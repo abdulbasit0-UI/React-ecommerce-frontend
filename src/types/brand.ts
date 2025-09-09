@@ -4,6 +4,7 @@ export interface Brand {
     description?: string;
     logo?: string;
     isActive: boolean;
+    slug: string;
     createdAt: string;
     updatedAt: string;
   }

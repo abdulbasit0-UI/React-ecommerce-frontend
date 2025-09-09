@@ -1,7 +1,7 @@
 // src/components/customer/user/UserOrders.tsx
 import { useState } from 'react';
 import { useMyOrders } from '../../../hooks/useUser';
-import { Search, Package, Clock, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Search, Package, Eye } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
@@ -11,6 +11,7 @@ import { Separator } from '../../ui/separator';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../layout/LoadingSpinner';
 import { format } from 'date-fns';
+import type { OrderResponseDto } from '@/types/order';
 
 const statusOptions = [
   { value: 'all', label: 'All Orders' },
@@ -21,13 +22,6 @@ const statusOptions = [
   { value: 'CANCELLED', label: 'Cancelled' },
 ];
 
-const statusIcons = {
-  PENDING: Clock,
-  PROCESSING: Package,
-  SHIPPED: Package,
-  DELIVERED: CheckCircle,
-  CANCELLED: XCircle,
-};
 
 const statusColors = {
   PENDING: 'bg-yellow-100 text-yellow-800',
@@ -43,19 +37,16 @@ export default function UserOrders() {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   
-  const { data, isLoading, isFetching } = useMyOrders(currentPage, 10, selectedStatus === 'all' ? undefined : selectedStatus);
+  const { data, isLoading } = useMyOrders(currentPage, 10, selectedStatus === 'all' ? undefined : selectedStatus);
 
 
 
-  console.log(data)
-
-  const filteredOrders = data?.data.filter((order: { items: any[]; }) =>
+  const filteredOrders = data?.data.filter((order: { items: { productName: string; }[]; }) =>
     order.items.some((item: { productName: string; }) => 
       item.productName.toLowerCase().includes(searchTerm.toLowerCase())
     )
   ) || [];
 
-  console.log(filteredOrders)
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -115,7 +106,7 @@ export default function UserOrders() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredOrders.map((order) => (
+          {filteredOrders.map((order: OrderResponseDto) => (
             <Card key={order.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">

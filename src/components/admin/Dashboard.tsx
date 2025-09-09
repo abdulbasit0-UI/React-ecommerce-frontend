@@ -1,5 +1,8 @@
 import DashboardStats from "./dashboard/DashboardStats";
 import SalesChart from "./dashboard/SalesChart";
+import TopProducts from "./dashboard/TopProducts";
+import OrderStatusChart from "./dashboard/OrderStatusChart";
+import CustomerGrowth from "./dashboard/CustomerGrowth";
 
 export default function Dashboard() {
   return (
@@ -15,7 +18,16 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <SalesChart />
-        {/* <RecentOrders /> */}
+        <OrderStatusChart />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <TopProducts />
+        </div>
+        <div className="lg:col-span-1">
+          <CustomerGrowth />
+        </div>
       </div>
     </div>
   );

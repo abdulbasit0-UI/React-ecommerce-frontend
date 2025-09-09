@@ -15,10 +15,10 @@ import { Input } from '@/components/ui/input';
 interface ShopFiltersProps {
   categories: any[];
   brands: any[];
-  selectedCategory?: string | null;
-  selectedBrand?: string | null;
-  onCategoryChange: (category: string | null) => void;
-  onBrandChange: (brand: string | null) => void;
+  selectedCategory?: string | null; // slug
+  selectedBrand?: string | null; // slug
+  onCategoryChange: (category: string | null) => void; // expects slug
+  onBrandChange: (brand: string | null) => void; // expects slug
 }
 
 export default function ShopFilters({
@@ -63,7 +63,7 @@ export default function ShopFilters({
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
             {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
+              <SelectItem key={category.id} value={category.slug}>
                 {category.name}
               </SelectItem>
             ))}
@@ -71,7 +71,7 @@ export default function ShopFilters({
         </Select>
         {selectedCategory && (
           <Badge variant="secondary" className="mt-1">
-            {categories.find(c => c.id === selectedCategory)?.name}
+            {categories.find(c => c.slug === selectedCategory)?.name}
             <button
               onClick={() => onCategoryChange(null)}
               className="ml-1 hover:text-destructive"
@@ -95,7 +95,7 @@ export default function ShopFilters({
           <SelectContent>
             <SelectItem value="all">All Brands</SelectItem>
             {brands.map((brand) => (
-              <SelectItem key={brand.id} value={brand.id}>
+              <SelectItem key={brand.id} value={brand.slug}>
                 {brand.name}
               </SelectItem>
             ))}
@@ -103,7 +103,7 @@ export default function ShopFilters({
         </Select>
         {selectedBrand && (
           <Badge variant="secondary" className="mt-1">
-            {brands.find(b => b.id === selectedBrand)?.name}
+            {brands.find(b => b.slug === selectedBrand)?.name}
             <button
               onClick={() => onBrandChange(null)}
               className="ml-1 hover:text-destructive"

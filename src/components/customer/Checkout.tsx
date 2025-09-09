@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import CheckoutSteps from '../../components/customer/checkout/CheckoutSteps';
 import CheckoutForm from '../../components/customer/checkout/CheckoutForm';
 import OrderSummary from '../../components/customer/checkout/OrderSummary';
 import StripeProvider from '../../components/providers/StripeProvider';
-import type { RootState } from '@/store/store';
-import SEO from '../seo/SEO';
+import { useMyCart } from '@/hooks/useCart';
 export default function Checkout() {
-  const { items } = useSelector((state: RootState) => state.cart);
-  const [currentStep, setCurrentStep] = useState(1);
+  const { data: cart, isLoading } = useMyCart();
+  const items = cart?.items || [];
+const [currentStep, setCurrentStep] = useState(1);
 
-  const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  const subtotal = cart?.total || 0;
   const shipping = subtotal > 50 ? 0 : 9.99;
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
@@ -24,7 +23,7 @@ export default function Checkout() {
   };
 
 
-  if (items.length === 0) {
+  if (!isLoading && items.length === 0) {
     window.location.href = '/cart';
     return null;
   }
@@ -52,13 +51,15 @@ export default function Checkout() {
           </div>
           
           <div className="lg:col-span-1">
-            <OrderSummary
-              subtotal={subtotal}
-              shipping={shipping}
-              tax={tax}
-              total={total}
-              items={items}
-            />
+            {!isLoading && (
+              <OrderSummary
+                subtotal={subtotal}
+                shipping={shipping}
+                tax={tax}
+                total={total}
+                items={items}
+              />
+            )}
           </div>
         </div>
       </div>

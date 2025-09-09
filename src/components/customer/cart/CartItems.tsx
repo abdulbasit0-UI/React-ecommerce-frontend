@@ -1,25 +1,25 @@
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../../ui/button';
-import { useDispatch } from 'react-redux';
-import { updateQuantity, removeFromCart } from '../../../store/slices/cartSlice';
-import type { CartItem } from '../../../types/cart';
+import { useUpdateCartItem, useRemoveCartItem } from '@/hooks/useCart';
+import type { ServerCartItem } from '@/lib/cartApi';
 import { Link } from 'react-router-dom';
 
 interface CartItemsProps {
-  items: CartItem[];
+  items: ServerCartItem[];
 }
 
 export default function CartItems({ items }: CartItemsProps) {
-  const dispatch = useDispatch();
+  const updateItem = useUpdateCartItem();
+  const removeItem = useRemoveCartItem();
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
-    if (newQuantity >= 0) {
-      dispatch(updateQuantity({ productId, quantity: newQuantity }));
+    if (newQuantity >= 1) {
+      updateItem.mutate({ productId, quantity: newQuantity });
     }
   };
 
   const handleRemove = (productId: string) => {
-    dispatch(removeFromCart(productId));
+    removeItem.mutate(productId);
   };
 
   if (items.length === 0) {
@@ -30,7 +30,7 @@ export default function CartItems({ items }: CartItemsProps) {
     <div className="space-y-4">
       {items.map((item) => (
         <div
-          key={item.product.id}
+          key={item.id}
           className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex gap-4"
         >
           {/* Product Image */}
@@ -53,7 +53,7 @@ export default function CartItems({ items }: CartItemsProps) {
               ${Number(item.product.price).toFixed(2)} each
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Subtotal: ${(Number(item.product.price) * item.quantity).toFixed(2)}
+              Subtotal: ${Number(item.lineTotal).toFixed(2)}
             </p>
           </div>
 
@@ -62,7 +62,7 @@ export default function CartItems({ items }: CartItemsProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleRemove(item.product.id)}
+              onClick={() => handleRemove(item.productId)}
               className="text-red-500 hover:text-red-700"
             >
               <Trash2 className="h-4 w-4" />
@@ -72,8 +72,8 @@ export default function CartItems({ items }: CartItemsProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleQuantityChange(item.product.id, item.quantity - 1)}
-                disabled={item.quantity <= 1}
+                onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                disabled={item.quantity <= 1 || updateItem.isPending}
               >
                 <Minus className="h-4 w-4" />
               </Button>
@@ -83,8 +83,8 @@ export default function CartItems({ items }: CartItemsProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleQuantityChange(item.product.id, item.quantity + 1)}
-                disabled={item.quantity >= item.product.stock}
+                onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                disabled={updateItem.isPending}
               >
                 <Plus className="h-4 w-4" />
               </Button>

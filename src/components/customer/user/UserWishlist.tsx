@@ -35,19 +35,12 @@ export default function UserWishlist() {
     try {
       await removeFromWishlist.mutateAsync(productId);
       toast.success('Removed from wishlist');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error('Failed to remove from wishlist');
     }
   };
 
-//   const handleAddToWishlist = async (productId: string) => {
-//     try {
-//       await addToWishlist.mutateAsync(productId);
-//       toast.success('Added to wishlist');
-//     } catch (error) {
-//       toast.error('Failed to add to wishlist');
-//     }
-//   };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -111,7 +104,7 @@ export default function UserWishlist() {
                     {product.name}
                   </h3>
                   <p className="text-2xl font-bold text-primary">
-                    ${product.price.toFixed(2)}
+                    ${Number(product.price).toFixed(2)}
                   </p>
                   {product.stock && product.stock < 10 && product.stock > 0 && (
                     <p className="text-sm text-orange-600 dark:text-orange-400">

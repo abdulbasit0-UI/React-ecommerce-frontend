@@ -9,16 +9,10 @@ import ProductTable from './products/ProductTable';
 export default function Products() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState({
-    categoryId: '',
-    brandId: '',
-    isActive: undefined as boolean | undefined,
-  });
 
   const { data, isLoading } = useProducts(page, 10, search ? { search } : undefined);
   const deleteProduct = useDeleteProduct();
 
-  console.log(data);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

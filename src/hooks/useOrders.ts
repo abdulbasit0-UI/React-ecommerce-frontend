@@ -40,11 +40,15 @@ export const useCreateOrder = () => {
     onSuccess: (data) => {
 
       queryClient.invalidateQueries({ queryKey: ['orders'] });
-      toast.success('Order created successfully');
+      toast.success('Order created successfully', {
+        position: 'top-center',
+      });
       return data;
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create order');
+    onError: (error: { response?: { data?: { message?: string } } }) => {
+      toast.error(error.response?.data?.message || 'Failed to create order', {
+        position: 'top-center',
+      });
     },
   });
 };

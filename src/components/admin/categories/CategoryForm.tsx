@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import LoadingSpinner from '../../layout/LoadingSpinner';
 import type { Category, CreateCategoryDto } from '../../../types/category';
 import { categorySchema } from '../../../lib/categoryValidation';
+import CategoryImageUpload from './CategoryImageUpload';
 
 interface CategoryFormProps {
   category?: Category;
@@ -30,9 +31,12 @@ export default function CategoryForm({ category, onSubmit, isLoading }: Category
     defaultValues: category || {
       name: '',
       description: '',
+      image: '',
       isActive: true,
     },
   });
+
+  const image = watch('image');
 
   const handleFormSubmit = async (data: CreateCategoryDto) => {
     await onSubmit(data);
@@ -63,6 +67,14 @@ export default function CategoryForm({ category, onSubmit, isLoading }: Category
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Category Image</Label>
+        <CategoryImageUpload
+          image={image}
+          onChange={(newImage) => setValue('image', newImage)}
+        />
       </div>
 
       <div className="space-y-2">

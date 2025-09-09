@@ -30,7 +30,11 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      const path = window.location.pathname;
+      const isProtectedArea = path.startsWith('/admin') || path.startsWith('/account');
+      if (isProtectedArea) {
+        window.location.href = '/login';
+      }
       toast.error('Session expired. Please login again.');
     }
     

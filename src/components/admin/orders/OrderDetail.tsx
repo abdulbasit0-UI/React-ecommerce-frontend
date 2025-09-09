@@ -80,8 +80,6 @@ export function OrderDetail({ orderId, isOpen, onClose }: OrderDetailProps) {
     }
   }, [orderId, isOpen]);
 
-  console.log(order);
-
   const fetchOrderDetails = async () => {
     if (!orderId) return;
 

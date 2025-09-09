@@ -15,7 +15,6 @@ export function Customers() {
   
   const { data: customers, isLoading, error } = useCustomers();
 
-  console.log(customers);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

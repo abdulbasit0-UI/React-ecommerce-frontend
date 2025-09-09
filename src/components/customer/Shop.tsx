@@ -19,8 +19,8 @@ export default function Shop() {
   const { data: categories = [] } = useCategories();
   const { data: brands = [] } = useBrands();
 
-  const selectedCategory = searchParams.get('category');
-  const selectedBrand = searchParams.get('brand');
+  const selectedCategorySlug = searchParams.get('category');
+  const selectedBrandSlug = searchParams.get('brand');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,12 +49,14 @@ export default function Shop() {
 
   // Generate dynamic SEO content based on filters
   const getPageTitle = () => {
-    if (selectedCategory && selectedBrand) {
-      return `${selectedCategory} by ${selectedBrand} - Shop Online`;
-    } else if (selectedCategory) {
-      return `${selectedCategory} Products - Shop Online`;
-    } else if (selectedBrand) {
-      return `${selectedBrand} Products - Shop Online`;
+    const categoryName = categories.find(c => c.slug === selectedCategorySlug)?.name;
+    const brandName = brands.find(b => b.slug === selectedBrandSlug)?.name;
+    if (categoryName && brandName) {
+      return `${categoryName} by ${brandName} - Shop Online`;
+    } else if (categoryName) {
+      return `${categoryName} Products - Shop Online`;
+    } else if (brandName) {
+      return `${brandName} Products - Shop Online`;
     } else if (searchQuery) {
       return `Search Results for "${searchQuery}" - Shop Online`;
     }
@@ -62,12 +64,14 @@ export default function Shop() {
   };
 
   const getPageDescription = () => {
-    if (selectedCategory && selectedBrand) {
-      return `Browse ${selectedCategory} products by ${selectedBrand}. Quality products with fast shipping and secure payment.`;
-    } else if (selectedCategory) {
-      return `Discover our collection of ${selectedCategory} products. Shop quality items with fast shipping and excellent customer service.`;
-    } else if (selectedBrand) {
-      return `Explore ${selectedBrand} products. Premium quality items with fast shipping and secure payment options.`;
+    const categoryName = categories.find(c => c.slug === selectedCategorySlug)?.name;
+    const brandName = brands.find(b => b.slug === selectedBrandSlug)?.name;
+    if (categoryName && brandName) {
+      return `Browse ${categoryName} products by ${brandName}. Quality products with fast shipping and secure payment.`;
+    } else if (categoryName) {
+      return `Discover our collection of ${categoryName} products. Shop quality items with fast shipping and excellent customer service.`;
+    } else if (brandName) {
+      return `Explore ${brandName} products. Premium quality items with fast shipping and secure payment options.`;
     } else if (searchQuery) {
       return `Search results for "${searchQuery}". Find the perfect products with our advanced search and filtering options.`;
     }
@@ -76,11 +80,13 @@ export default function Shop() {
 
   const getKeywords = () => {
     const baseKeywords = 'shop, online shopping, products, ecommerce, buy online';
-    if (selectedCategory) {
-      return `${selectedCategory}, ${baseKeywords}`;
+    const categoryName = categories.find(c => c.slug === selectedCategorySlug)?.name;
+    const brandName = brands.find(b => b.slug === selectedBrandSlug)?.name;
+    if (categoryName) {
+      return `${categoryName}, ${baseKeywords}`;
     }
-    if (selectedBrand) {
-      return `${selectedBrand}, ${baseKeywords}`;
+    if (brandName) {
+      return `${brandName}, ${baseKeywords}`;
     }
     if (searchQuery) {
       return `${searchQuery}, search, ${baseKeywords}`;
@@ -154,18 +160,18 @@ export default function Shop() {
           <ShopFilters
             categories={categories}
             brands={brands}
-            selectedCategory={selectedCategory}
-            selectedBrand={selectedBrand}
-            onCategoryChange={(category) => handleFilterChange('category', category)}
-            onBrandChange={(brand) => handleFilterChange('brand', brand)}
+            selectedCategory={selectedCategorySlug}
+            selectedBrand={selectedBrandSlug}
+            onCategoryChange={(categorySlug) => handleFilterChange('category', categorySlug)}
+            onBrandChange={(brandSlug) => handleFilterChange('brand', brandSlug)}
           />
         </aside>
 
         {/* Products Grid */}
         <div className="flex-1">
           <ProductGrid
-            categoryId={selectedCategory || undefined}
-            brandId={selectedBrand || undefined}
+            categoryId={categories.find(c => c.slug === selectedCategorySlug)?.id || undefined}
+            brandId={brands.find(b => b.slug === selectedBrandSlug)?.id || undefined}
             searchQuery={searchQuery || undefined}
             sortBy={sortBy}
           />

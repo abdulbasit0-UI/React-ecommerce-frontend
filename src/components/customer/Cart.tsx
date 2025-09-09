@@ -1,22 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import CartItems from '../../components/customer/cart/CartItems';
 import CartSummary from '../../components/customer/cart/CartSummary';
 import EmptyCart from '../../components/customer/cart/EmptyCart';
 import { Button } from '../../components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import type { RootState } from '@/store/store';
+import { useMyCart } from '@/hooks/useCart';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { items } = useSelector((state: RootState) => state.cart);
-  
-  const subtotal = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  const { data: cart, isLoading } = useMyCart();
+  const items = cart?.items || [];
+  const subtotal = cart?.total || 0;
   const shipping = subtotal > 50 ? 0 : 9.99;
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
 
-  if (items.length === 0) {
+  if (!isLoading && items.length === 0) {
     return (
       <>
           <title>Shopping Cart - Empty</title>
@@ -52,13 +51,15 @@ export default function Cart() {
         </Button>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Shopping Cart</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          You have {items.length} item{items.length !== 1 ? 's' : ''} in your cart
+          {isLoading ? 'Loading your cart...' : (
+            <>You have {items.length} item{items.length !== 1 ? 's' : ''} in your cart</>
+          )}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <CartItems items={items} />
+          {!isLoading && <CartItems items={items} />}
         </div>
         
         <div className="lg:col-span-1">

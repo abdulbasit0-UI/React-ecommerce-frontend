@@ -27,8 +27,9 @@ export const useCreateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create category');
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to create category';
+      toast.error(message);
     },
   });
 };
@@ -43,8 +44,9 @@ export const useUpdateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update category');
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to update category';
+      toast.error(message);
     },
   });
 };
@@ -58,8 +60,19 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category deleted successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete category');
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to delete category';
+      toast.error(message);
+    },
+  });
+};
+
+export const useUploadCategoryImage = () => {
+  return useMutation({
+    mutationFn: (file: File) => categoryApi.uploadImage(file),
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to upload image';
+      toast.error(message);
     },
   });
 };

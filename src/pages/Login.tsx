@@ -1,17 +1,19 @@
 import AuthLayout from '../components/layout/AuthLayout';
 import LoginForm from '../components/auth/LoginForm';
-import SEO from '../components/seo/SEO';
 
 export default function Login() {
   return (
     <>
-      <SEO
-        title="Login - Sign In to Your Account"
-        description="Sign in to your account to access your orders, wishlist, and personalized shopping experience. Secure login with fast checkout."
-        keywords="login, sign in, account, ecommerce, secure login, user account"
-        url="/login"
-        noindex={true}
-      />
+      
+      <title>Login</title>
+      <meta
+        name="description"
+        content="Sign in to your account to start shopping. Secure login with easy access, fast shipping, and personalized recommendations."
+        />
+      <meta name="keywords" content="login, sign in, account access, secure login, online shopping" />
+      <meta name="url" content="/login" />
+      <meta name="type" content="website" />
+      <meta name="robots" content="noindex" />
       <AuthLayout
         title="Welcome back"
         subtitle="Enter your credentials to access your account"

@@ -14,12 +14,11 @@ import {
   SelectValue,
 } from '../../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../store/store';
 import { Loader2, CreditCard } from 'lucide-react';
 import { useCreateOrder } from '@/hooks/useOrders';
 import { useCreateCheckoutSession } from '@/hooks/usePayments';
 import { useUserAddresses } from '@/hooks/useUser';      // <-- new
+import { useMyCart } from '@/hooks/useCart';
 const shippingSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
@@ -46,7 +45,8 @@ export default function CheckoutForm({
   onPrev,
 }: CheckoutFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { items } = useSelector((state: RootState) => state.cart);
+  const { data: cart } = useMyCart();
+  const items = cart?.items || [];
   const createOrder = useCreateOrder();
   const createCheckoutSession = useCreateCheckoutSession();
 
@@ -80,7 +80,7 @@ export default function CheckoutForm({
         setValue('lastName', addr.lastName || '');
         setValue('email', addr.email || '');
         setValue('phone', addr.phone || '');
-        setValue('address', addr.addressLine1 || '');
+        setValue('address', addr.address || '');
         setValue('city', addr.city || '');
         setValue('state', addr.state || '');
         setValue('zipCode', addr.zipCode || '');
@@ -126,7 +126,7 @@ export default function CheckoutForm({
       });
       if (session.url) window.location.href = session.url;
       else throw new Error('No checkout URL received');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       alert('Payment failed. Please try again.');
     } finally {
@@ -156,7 +156,7 @@ export default function CheckoutForm({
             <SelectContent>
               {savedAddresses.map((a) => (
                 <SelectItem key={a.id} value={a.id}>
-                  {a.addressLine1}, {a.city}, {a.state} {a.zipCode}
+                  {a.address}, {a.city}, {a.state} {a.zipCode}
                 </SelectItem>
               ))}
             </SelectContent>

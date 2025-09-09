@@ -1,14 +1,14 @@
 import { ShoppingBag, Truck, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Separator } from '../../ui/separator';
-import type { CartItem } from '@/types/cart';
+import type { ServerCartItem } from '@/lib/cartApi';
 
 interface OrderSummaryProps {
   subtotal: number;
   shipping: number;
   tax: number;
   total: number;
-  items: CartItem[];
+  items: ServerCartItem[];
 }
 
 export default function OrderSummary({ subtotal, shipping, tax, total, items }: OrderSummaryProps) {
@@ -23,7 +23,7 @@ export default function OrderSummary({ subtotal, shipping, tax, total, items }: 
         </CardHeader>
         <CardContent className="space-y-4">
           {items.map((item) => (
-            <div key={item.product.id} className="flex gap-4">
+            <div key={item.id} className="flex gap-4">
               <img
                 src={item.product.images[0] || '/placeholder-product.png'}
                 alt={item.product.name}
@@ -36,7 +36,7 @@ export default function OrderSummary({ subtotal, shipping, tax, total, items }: 
                 </p>
               </div>
               <p className="font-medium">
-                ${(Number(item.product.price) * item.quantity).toFixed(2)}
+                ${Number(item.lineTotal).toFixed(2)}
               </p>
             </div>
           ))}

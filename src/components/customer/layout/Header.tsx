@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../../store/store';
+import { useMyCart } from '@/hooks/useCart';
 import { ShoppingBag, Search, Menu, User, Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,10 +13,9 @@ interface HeaderProps {
 export default function Header({ isScrolled }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
-  const cartItemCount = useSelector((state: RootState) => state.cart.itemCount);
+  const { data: cart } = useMyCart();
+  const cartItemCount = cart?.itemCount || 0;
   const navigate = useNavigate();
-console.log("header", isAuthenticated);
-  console.log("header", user);
 
 
   const navItems = [
@@ -50,8 +48,9 @@ console.log("header", isAuthenticated);
               <div className="flex items-center space-x-4">
                 {isAuthenticated ? (
                   <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4" />
-                    <span className="text-gray-700 dark:text-gray-300">{user?.name}</span>
+                   <Link to="/account" className="text-gray-600 dark:text-gray-300 hover:text-primary">
+                   <User className="h-4 w-4" />
+                   <span className="text-gray-700 dark:text-gray-300">{user?.name}</span></Link>
                   </div>
                 ) : (
                   <Link to="/login" className="text-gray-600 dark:text-gray-400 hover:text-primary">
@@ -88,10 +87,12 @@ console.log("header", isAuthenticated);
 
             {/* Actions */}
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="hidden md:flex">
-                <Heart className="h-5 w-5" />
+              <Button asChild variant="ghost" size="icon" className="hidden md:flex">
+                <Link to="/wishlist">
+                  <Heart className="h-5 w-5" />
+                </Link>
               </Button>
-              
+            
               <Button 
                 variant="ghost" 
                 size="icon" 

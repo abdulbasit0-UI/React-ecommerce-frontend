@@ -29,7 +29,7 @@ export default function LoginForm() {
     try {
       await dispatch(login(data)).unwrap();
       navigate('/');
-    } catch (error) {
+    } catch (error) { 
       // Error is handled in the slice
     }
   };

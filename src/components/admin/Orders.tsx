@@ -9,7 +9,6 @@ export function Orders() {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const { data: orders, isLoading: loading, error } = useAdminOrders();
 
-  console.log(orders);
 
   if (loading) {
     return (

@@ -12,7 +12,6 @@ export default function UserOverview() {
   const { data: orderStats, isLoading: statsLoading } = useMyOrderStats();
   const navigate = useNavigate();
 
-  console.log(orderStats);
 
   if (profileLoading || statsLoading) {
     return <LoadingSpinner />;
@@ -24,6 +23,9 @@ export default function UserOverview() {
     { name: 'Pending Orders', value: orderStats?.pendingOrders || 0, icon: Clock, color: 'bg-yellow-500' },
     { name: 'Completed Orders', value: orderStats?.completedOrders || 0, icon: CheckCircle, color: 'bg-purple-500' },
   ];
+
+  console.log(orderStats);
+  
 
   return (
     <div className="space-y-6">

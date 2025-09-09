@@ -1,37 +1,56 @@
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { Skeleton } from '../../ui/skeleton';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../../../store/slices/cartSlice';
+import { useAddCartItem } from '@/hooks/useCart';
 import type { Product } from '../../../types/product';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useAddToWishlist, useRemoveFromWishlist, useUserWishlist } from '../../../hooks/useUser';
+import { useProductRating } from '../../../hooks/useReviews';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-    console.log(product);
-  const dispatch = useDispatch();
-  const [isLiked, setIsLiked] = useState(false);
+  const addCartItem = useAddCartItem();
+  const { data: wishlist = [] } = useUserWishlist();
+  const addToWishlist = useAddToWishlist();
+  const removeFromWishlist = useRemoveFromWishlist();
+  const [isToggling, setIsToggling] = useState(false);
+  const { rating: averageRating } = useProductRating(product.id);
+  
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const isLiked = useMemo(() => {
+    return wishlist?.some((p: Product) => p.id === product.id) ?? false;
+  }, [wishlist, product.id]);
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
-    dispatch(addToCart({
-      product: {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        images: product.images,
-        stock: product.stock || 0,
-      },
-      quantity: 1,
-    }));
+    try {
+      await addCartItem.mutateAsync({ productId: product.id, quantity: 1 });
+    } catch {
+      // errors are surfaced via toast in the hook
+    }
   };
 
-  const toggleLike = (e: React.MouseEvent) => {
+  const toggleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsLiked(!isLiked);
+    if (isToggling) return;
+    try {
+      setIsToggling(true);
+      if (isLiked) {
+        await removeFromWishlist.mutateAsync(product.id);
+        toast.success('Removed from wishlist');
+      } else {
+        await addToWishlist.mutateAsync(product.id);
+        toast.success('Added to wishlist');
+      }
+    } catch {
+      toast.error('Failed to update wishlist');
+    } finally {
+      setIsToggling(false);
+    }
   };
 
   return (
@@ -83,15 +102,20 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Rating */}
           <div className="flex items-center mb-3">
             <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 dark:text-gray-600'
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${
+                      i < Math.floor(averageRating) 
+                        ? 'fill-yellow-400 text-yellow-400' 
+                        : 'text-gray-300 dark:text-gray-600'
                     }`}
-                />
-              ))}
+                  />
+                ))}
             </div>
-            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(4.8)</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+              ({averageRating.toFixed(1)})
+            </span>
           </div>
 
           {/* Price and Add to Cart */}
@@ -108,7 +132,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
             <button
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              disabled={product.stock === 0 || addCartItem.isPending}
               className="p-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               <ShoppingCart className="h-4 w-4" />

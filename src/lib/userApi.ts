@@ -1,5 +1,6 @@
 // src/lib/api/userApi.ts (Complete version)
 import type { OrderResponseDto } from '@/types/order';
+import type { Product } from '@/types/product';
 import type { UserProfile, UpdateProfileDto, Address } from '../types/user';
 import api from './api';
 
@@ -13,7 +14,6 @@ export const userApi = {
 
   getCustomers: async (): Promise<UserProfile[]> => {
     const response = await api.get('/users/customers');
-    console.log(response.data);
     return response.data;
   },
 
@@ -79,18 +79,19 @@ export const userApi = {
     return response.data;
   },
 
-  // Wishlist
-  getMyWishlist: async () => {
-    const response = await api.get('/users/me/wishlist');
-    return response.data;
+  // Wishlist (new base path)
+  getMyWishlist: async (): Promise<Product[]> => {
+    const response = await api.get('/wishlist/me');
+    return response.data as Product[];
   },
 
-  addToWishlist: async (productId: string): Promise<void> => {
-    await api.post(`/users/me/wishlist/${productId}`);
+  addToWishlist: async (productId: string): Promise<{ success: boolean }> => {
+    const response = await api.post(`/wishlist/me/${productId}`);
+    return response.data as { success: boolean };
   },
 
   removeFromWishlist: async (productId: string): Promise<void> => {
-    await api.delete(`/users/me/wishlist/${productId}`);
+    await api.delete(`/wishlist/me/${productId}`);
   },
 
   // Notifications
