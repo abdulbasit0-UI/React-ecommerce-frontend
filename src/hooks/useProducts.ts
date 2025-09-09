@@ -5,7 +5,7 @@ import { productApi } from '@/lib/productApi';
 import type { AxiosError } from 'axios';
 
 // Updated to use infinite query for proper pagination
-export const useProducts = (limit = 10, filters?: ProductFilters, sortBy?: string) => {
+export const useProducts = (limit = 10, p0: number, filters?: ProductFilters, sortBy?: string) => {
   return useInfiniteQuery({
     queryKey: ['products', filters, sortBy, limit],
     queryFn: ({ pageParam = 1 }) => {
