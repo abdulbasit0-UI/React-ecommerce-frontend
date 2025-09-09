@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCategory, useUpdateCategory } from '@/hooks/useCategories';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import type { UpdateCategoryDto } from '@/types/category';
+import type { CreateCategoryDto } from '@/types/category';
 import CategoryForm from './admin/categories/CategoryForm';
 
 export default function EditCategory() {
@@ -22,8 +22,8 @@ export default function EditCategory() {
     return <div>Category not found</div>;
   }
 
-  const handleSubmit = async (data: UpdateCategoryDto) => {
-    await updateCategory.mutateAsync({ id: id!, data });
+  const handleSubmit = async (data: CreateCategoryDto) => {
+    await updateCategory.mutateAsync({ id: id!, data: { ...data, id: id! } });
     navigate('/admin/categories');
   };
 

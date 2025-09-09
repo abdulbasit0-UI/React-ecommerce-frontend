@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBrand, useUpdateBrand } from '@/hooks/useBrands';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import type { UpdateBrandDto } from '@/types/brand';
+import type { CreateBrandDto } from '@/types/brand';
 import BrandForm from './brands/BrandForm';
 
 export default function EditBrand() {
@@ -22,8 +22,8 @@ export default function EditBrand() {
     return <div>Brand not found</div>;
   }
 
-  const handleSubmit = async (data: UpdateBrandDto) => {
-    await updateBrand.mutateAsync({ id: id!, data });
+  const handleSubmit = async (data: CreateBrandDto) => {
+    await updateBrand.mutateAsync({ id: id!, data: { ...data, id: id! } });
     navigate('/admin/brands');
   };
 

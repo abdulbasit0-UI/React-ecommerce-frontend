@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ProductForm from './products/ProductForm';
 import { useProduct, useUpdateProduct } from '@/hooks/useProducts';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
-import type { UpdateProductDto } from '@/types/product';
+import type { CreateProductDto } from '@/types/product';
 
 export default function EditProduct() {
   const { id } = useParams<{ id: string }>();
@@ -22,8 +22,8 @@ export default function EditProduct() {
     return <div>Product not found</div>;
   }
 
-  const handleSubmit = async (data: UpdateProductDto) => {
-    await updateProduct.mutateAsync({ id: id!, data });
+  const handleSubmit = async (data: CreateProductDto) => {
+    await updateProduct.mutateAsync({ id: id!, data: { ...data, id: id! } });
     navigate('/admin/products');
   };
 

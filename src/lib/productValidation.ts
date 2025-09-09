@@ -8,7 +8,7 @@ export const productSchema = z.object({
   categoryId: z.string().uuid('Please select a category'),
   brandId: z.string().uuid('Please select a brand'),
   isActive: z.boolean().optional().default(true),
-  images: z.array(z.string()).optional().default([]),
+  images: z.array(z.string()),
 });
 
 export const productImageSchema = z.object({

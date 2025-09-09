@@ -25,7 +25,7 @@ export default function Categories() {
 
   const handleSubmit = async (data: CreateCategoryDto) => {
     if (editingCategory) {
-      await updateCategory.mutateAsync({ id: editingCategory.id, data });
+      await updateCategory.mutateAsync({ id: editingCategory.id, data: { ...data, id: editingCategory.id } });
     } else {
       await createCategory.mutateAsync(data);
     }

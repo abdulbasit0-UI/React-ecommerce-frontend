@@ -35,7 +35,7 @@ export default function Brands() {
 
   const handleSubmit = async (data: CreateBrandDto) => {
     if (editingBrand) {
-      await updateBrand.mutateAsync({ id: editingBrand.id, data });
+      await updateBrand.mutateAsync({ id: editingBrand.id, data: { ...data, id: editingBrand.id } });
     } else {
       await createBrand.mutateAsync(data);
     }
