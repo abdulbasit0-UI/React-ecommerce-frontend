@@ -1,6 +1,7 @@
 import { orderApi } from '@/lib/orderApi';
 import { paymentApi } from '@/lib/paymentApi';
 import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { toast } from 'sonner';
 
 export const useCreateCheckoutSession = () => {
@@ -10,8 +11,8 @@ export const useCreateCheckoutSession = () => {
       successUrl: string;
       cancelUrl: string;
     }) => orderApi.createCheckoutSession(orderId, successUrl, cancelUrl),
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create checkout session');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to create checkout session');
     },
   });
 };
@@ -22,8 +23,8 @@ export const useProcessPayment = () => {
     onSuccess: () => {
       toast.success('Payment processed successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Payment failed');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Payment failed');
     },
   });
 };

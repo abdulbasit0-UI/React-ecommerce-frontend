@@ -11,10 +11,12 @@ import {
 import { Separator } from '../../ui/separator';
 import { Badge } from '../../ui/badge';
 import { Input } from '@/components/ui/input';
+import type { Category } from '@/types/category';
+import type { Brand } from '@/types/brand';
 
 interface ShopFiltersProps {
-  categories: any[];
-  brands: any[];
+  categories: Category[];
+  brands: Brand[];
   selectedCategory?: string | null; // slug
   selectedBrand?: string | null; // slug
   onCategoryChange: (category: string | null) => void; // expects slug

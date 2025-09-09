@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { UpdateProfileDto, Address } from '../types/user';
 import { userApi } from '@/lib/userApi';
+import type { AxiosError } from 'axios';
 
 // Profile hooks
 export const useUserProfile = () => {
@@ -32,8 +33,8 @@ export const useUpdateProfile = () => {
       toast.success('Profile updated successfully');
       return data;
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update profile');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to update profile');
     },
   });
 };
@@ -47,8 +48,8 @@ export const useUploadAvatar = () => {
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
       toast.success('Avatar updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to upload avatar');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to upload avatar');
     },
   });
 };

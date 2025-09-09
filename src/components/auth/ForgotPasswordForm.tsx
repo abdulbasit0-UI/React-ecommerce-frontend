@@ -1,31 +1,29 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { Mail, ArrowLeft } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import LoadingSpinner from '../layout/LoadingSpinner';
 import { forgotPassword } from '../../store/slices/authSlice';
-import type { ForgotPasswordDto } from '../../types/auth';
 import { forgotPasswordSchema } from '@/lib/validation';
-
+import { useAppDispatch } from '@/store/store';
 export default function ForgotPasswordForm() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ForgotPasswordDto>({
+  } = useForm<{ email: string }>({
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (data: ForgotPasswordDto) => {
+  const onSubmit = async (data: { email: string }) => {
     try {
       await dispatch(forgotPassword(data.email)).unwrap();
-    } catch (error) {
+    } catch {
       // Error is handled in the slice
     }
   };

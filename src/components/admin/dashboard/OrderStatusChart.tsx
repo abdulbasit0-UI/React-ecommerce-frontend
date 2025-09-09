@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useStats } from '../../../hooks/useStats';
 import { Loader2 } from 'lucide-react';
 
@@ -61,7 +61,7 @@ export default function OrderStatusChart() {
     return new Intl.NumberFormat('en-US').format(value);
   };
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active: boolean, payload: { name: string, value: number }[] }) => {
     if (active && payload && payload.length) {
       const data = payload[0];
       return (
@@ -100,7 +100,7 @@ export default function OrderStatusChart() {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip active={true} payload={[]} />} />
             </PieChart>
           </ResponsiveContainer>
         </div>

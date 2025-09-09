@@ -16,4 +16,6 @@ export interface Brand {
     isActive?: boolean;
   }
   
-  export interface UpdateBrandDto extends Partial<CreateBrandDto> {}
+  export interface UpdateBrandDto extends Partial<CreateBrandDto> {
+    id: string;
+  }

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { MailCheck, MailX, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { verifyEmail } from '../../store/slices/authSlice';
+import { useAppDispatch } from '@/store/store';
 
 export default function EmailVerification() {
   const [searchParams] = useSearchParams();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const token = searchParams.get('token');
 
@@ -23,7 +23,7 @@ export default function EmailVerification() {
     try {
       await dispatch(verifyEmail(token!)).unwrap();
       setStatus('success');
-    } catch (error) {
+    } catch {
       setStatus('error');
     }
   };

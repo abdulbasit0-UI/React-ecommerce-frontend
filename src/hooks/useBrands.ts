@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type {  CreateBrandDto, UpdateBrandDto } from '../types/brand';
 import { brandApi } from '@/lib/brandApi';
+import type { AxiosError } from 'axios';
 
 export const useBrands = () => {
   return useQuery({
@@ -27,8 +28,8 @@ export const useCreateBrand = () => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
       toast.success('Brand created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create brand');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to create brand');
     },
   });
 };
@@ -43,8 +44,8 @@ export const useUpdateBrand = () => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
       toast.success('Brand updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update brand');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to update brand');
     },
   });
 };
@@ -58,8 +59,8 @@ export const useDeleteBrand = () => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
       toast.success('Brand deleted successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete brand');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to delete brand');
     },
   });
 };
@@ -67,8 +68,8 @@ export const useDeleteBrand = () => {
 export const useUploadBrandLogo = () => {
   return useMutation({
     mutationFn: (file: File) => brandApi.uploadLogo(file),
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to upload logo');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to upload logo');
     },
   });
 };

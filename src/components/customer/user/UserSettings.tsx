@@ -28,7 +28,7 @@ export default function UserSettings() {
         preferences,
       });
       toast.success('Preferences updated successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update preferences');
     } finally {
       setIsSaving(false);
@@ -48,7 +48,7 @@ export default function UserSettings() {
   }: {
     title: string;
     description: string;
-    icon: any;
+    icon: React.ElementType;
     enabled: boolean;
     onToggle: (checked: boolean) => void;
   }) => (

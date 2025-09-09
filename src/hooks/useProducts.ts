@@ -1,10 +1,11 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { Product, CreateProductDto, UpdateProductDto, ProductFilters } from '../types/product';
+import type { CreateProductDto, UpdateProductDto, ProductFilters } from '../types/product';
 import { productApi } from '@/lib/productApi';
+import type { AxiosError } from 'axios';
 
 // Updated to use infinite query for proper pagination
-export const useProducts = (page = 1, limit = 10, filters?: ProductFilters, sortBy?: string) => {
+export const useProducts = (limit = 10, filters?: ProductFilters, sortBy?: string) => {
   return useInfiniteQuery({
     queryKey: ['products', filters, sortBy, limit],
     queryFn: ({ pageParam = 1 }) => {
@@ -71,8 +72,8 @@ export const useCreateProduct = () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Product created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create product');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to create product');
     },
   });
 };
@@ -88,8 +89,8 @@ export const useUpdateProduct = () => {
       queryClient.invalidateQueries({ queryKey: ['product', id] });
       toast.success('Product updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update product');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to update product');
     },
   });
 };
@@ -103,8 +104,8 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Product deleted successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete product');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to delete product');
     },
   });
 };
@@ -112,8 +113,8 @@ export const useDeleteProduct = () => {
 export const useUploadProductImages = () => {
   return useMutation({
     mutationFn: (files: File[]) => productApi.uploadMultipleImages(files),
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to upload images');
+    onError: (error: AxiosError) => {
+      toast.error(error.response?.data as string || 'Failed to upload images');
     },
   });
 };

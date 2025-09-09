@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -11,10 +10,11 @@ import LoadingSpinner from '../layout/LoadingSpinner';
 import { register } from '../../store/slices/authSlice';
 import type { RegisterDto } from '../../types/auth';
 import { registerSchema } from '@/lib/validation';
+import { useAppDispatch } from '@/store/store';
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   
   const {
@@ -29,7 +29,7 @@ export default function RegisterForm() {
     try {
       await dispatch(register(data)).unwrap();
       navigate('/email-verification-sent');
-    } catch (error) {
+    } catch {
       // Error is handled in the slice
     }
   };

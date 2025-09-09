@@ -28,12 +28,19 @@ export interface Product {
     isActive?: boolean;
   }
   
-  export interface UpdateProductDto extends Partial<CreateProductDto> {}
+  export interface UpdateProductDto extends Partial<CreateProductDto> {
+    id: string;
+  }
   
   export interface ProductFilters {
     search?: string;
     categoryId?: string;
     brandId?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    sortBy?: string;
+    sortOrder?: string;
     isActive?: boolean;
   }
   

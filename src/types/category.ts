@@ -16,4 +16,6 @@ export interface Category {
     isActive?: boolean;
   }
   
-  export interface UpdateCategoryDto extends Partial<CreateCategoryDto> {}
+  export interface UpdateCategoryDto extends Partial<CreateCategoryDto> {
+    id: string;
+  }

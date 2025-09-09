@@ -1,7 +1,7 @@
 // src/components/customer/user/UserProfile.tsx
 import { useState } from 'react';
 import { useUserProfile, useUpdateProfile, useUploadAvatar } from '../../../hooks/useUser';
-import { User, Mail, Phone, Calendar, Edit3, Camera } from 'lucide-react';
+import { Mail, Edit3, Camera } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Label } from '../../ui/label';
@@ -23,7 +23,8 @@ export default function UserProfile() {
     dateOfBirth: '',
     bio: '',
   });
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_selectedFile, setSelectedFile] = useState<File | null>(null);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -44,7 +45,7 @@ export default function UserProfile() {
       await updateProfile.mutateAsync(formData);
       setIsEditing(false);
       toast.success('Profile updated successfully');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update profile');
     }
   };
@@ -56,7 +57,7 @@ export default function UserProfile() {
       try {
         await uploadAvatar.mutateAsync(file);
         toast.success('Avatar updated successfully');
-      } catch (error) {
+      } catch {
         toast.error('Failed to upload avatar');
       }
     }

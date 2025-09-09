@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem } from '../../ui/select';
 import { Badge } from '../../ui/badge';
 import { Separator } from '../../ui/separator';
 import { toast } from 'sonner';
-import type { Address, AddressType } from '../../../types/user';
+import type { Address } from '../../../types/user';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 export default function UserAddresses() {
@@ -74,7 +74,7 @@ export default function UserAddresses() {
         toast.success('Address added successfully');
       }
       setIsModalOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('Failed to save address');
     }
   };
@@ -84,7 +84,7 @@ export default function UserAddresses() {
       try {
         await deleteAddress.mutateAsync(addressId);
         toast.success('Address deleted successfully');
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete address');
       }
     }
@@ -94,7 +94,7 @@ export default function UserAddresses() {
     try {
       await setDefaultAddress.mutateAsync(addressId);
       toast.success('Default address updated');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update default address');
     }
   };
@@ -303,7 +303,7 @@ export default function UserAddresses() {
                 <Label>Address Type</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value) => setFormData({ ...formData, type: value as unknown as AddressType })}
+                  onValueChange={(value) => setFormData({ ...formData, type: value as Address['type'] })}
                 >
                   <SelectContent>
                     <SelectItem value="shipping">Shipping</SelectItem>

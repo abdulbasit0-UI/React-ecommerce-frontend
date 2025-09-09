@@ -3,6 +3,21 @@ import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/tool
 import type { AuthState, LoginDto, RegisterDto, User } from '../../types/auth';
 import api from '../../lib/api';
 import { toast } from 'sonner';
+import { AxiosError } from 'axios';
+
+
+interface LoginResponse {
+  user: User;
+  access_token: string;
+}
+
+interface MessageResponse {
+  message: string;
+}
+
+interface ValidateTokenResponse {
+  user: User;
+}
 
 /* ---------- Helpers ---------- */
 function getInitialAuthState(): AuthState {
@@ -27,20 +42,24 @@ function getInitialAuthState(): AuthState {
   };
 }
 
+
+
 /* ---------- Async Thunks ---------- */
 
 export const login = createAsyncThunk<
-  { user: User; access_token: string },
+  LoginResponse,
   LoginDto,
   { rejectValue: string }
 >(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const { data } = await api.post('/auth/login', credentials);
+      const { data } = await api.post<LoginResponse>('/auth/login', credentials);
       return data;
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Login failed. Please check your credentials.';
+    } catch (error) {
+      const message = error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : 'Login failed. Please check your credentials.';
       toast.error(message);
       return rejectWithValue(message);
     }
@@ -48,18 +67,20 @@ export const login = createAsyncThunk<
 );
 
 export const register = createAsyncThunk<
-  { message: string },
+  MessageResponse,
   RegisterDto,
   { rejectValue: string }
 >(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const { data } = await api.post('/auth/register', userData);
+      const { data } = await api.post<MessageResponse>('/auth/register', userData);
       toast.success(data.message);
       return data;
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Registration failed. Please try again.';
+    } catch (error) {
+      const message = error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : 'Registration failed. Please try again.';
       toast.error(message);
       return rejectWithValue(message);
     }
@@ -67,18 +88,20 @@ export const register = createAsyncThunk<
 );
 
 export const verifyEmail = createAsyncThunk<
-  { message: string },
+  MessageResponse,
   string,
   { rejectValue: string }
 >(
   'auth/verifyEmail',
   async (token, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/auth/verify-email?token=${encodeURIComponent(token)}`);
+      const { data } = await api.get<MessageResponse>(`/auth/verify-email?token=${encodeURIComponent(token)}`);
       toast.success(data.message);
       return data;
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Email verification failed. Link may be expired.';
+    } catch (error) {
+      const message = error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : 'Email verification failed. Link may be expired.';
       toast.error(message);
       return rejectWithValue(message);
     }
@@ -86,18 +109,20 @@ export const verifyEmail = createAsyncThunk<
 );
 
 export const forgotPassword = createAsyncThunk<
-  { message: string },
+  MessageResponse,
   string,
   { rejectValue: string }
 >(
   'auth/forgotPassword',
   async (email, { rejectWithValue }) => {
     try {
-      const { data } = await api.post('/auth/forgot-password', { email });
+      const { data } = await api.post<MessageResponse>('/auth/forgot-password', { email });
       toast.success(data.message);
       return data;
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to send password reset email.';
+    } catch (error) {
+      const message = error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : 'Failed to send password reset email.';
       toast.error(message);
       return rejectWithValue(message);
     }
@@ -105,39 +130,49 @@ export const forgotPassword = createAsyncThunk<
 );
 
 export const resetPassword = createAsyncThunk<
-  { message: string },
+  MessageResponse,
   { newPassword: string; token: string },
   { rejectValue: string }
 >(
   'auth/resetPassword',
   async ({ newPassword, token }, { rejectWithValue }) => {
     try {
-      const { data } = await api.post('/auth/reset-password', { newPassword, token });
+      const { data } = await api.post<MessageResponse>('/auth/reset-password', { newPassword, token });
       toast.success(data.message);
       return data;
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Password reset failed. Link may be expired.';
+    } catch (error) {
+      const message = error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : 'Password reset failed. Link may be expired.';
       toast.error(message);
       return rejectWithValue(message);
     }
   }
 );
 
-export const validateToken = createAsyncThunk(
+export const validateToken = createAsyncThunk<
+  ValidateTokenResponse,
+  void,
+  { rejectValue: string }
+>(
   'auth/validateToken',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get('/auth/me');
+      const { data } = await api.get<ValidateTokenResponse>('/auth/me');
       return data;
-    } catch (err: any) {
+    } catch (error) {
       // Check if it's a network error vs auth error
-      if (err.code === 'NETWORK_ERROR' || err.response?.status >= 500) {
-        // Don't clear auth on network/server errors
-        return rejectWithValue('NETWORK_ERROR');
+      if (error instanceof AxiosError) {
+        if (error.code === 'NETWORK_ERROR' || (error.response?.status && error.response.status >= 500)) {
+          // Don't clear auth on network/server errors
+          return rejectWithValue('NETWORK_ERROR');
+        }
+        // Only clear on actual auth errors (401, 403, etc.)
+        const message = error.response?.data?.message || 'Session expired. Please log in again.';
+        return rejectWithValue(message);
       }
-      // Only clear on actual auth errors (401, 403, etc.)
-      const message = err.response?.data?.message || 'Session expired. Please log in again.';
-      return rejectWithValue(message);
+      
+      return rejectWithValue('An unexpected error occurred during token validation');
     }
   } 
 );

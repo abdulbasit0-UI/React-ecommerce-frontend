@@ -1,10 +1,10 @@
-import type { CreateProductDto, PaginatedResponse, Product, UpdateProductDto } from "@/types/product";
+import type { CreateProductDto, PaginatedResponse, Product, ProductFilters, UpdateProductDto } from "@/types/product";
 import api from "./api";
 
 // src/lib/api/productApi.ts
 export const productApi = {
   // Enhanced getProducts with all filter options
-  getProducts: async (page = 1, limit = 10, filters?: any) => {
+  getProducts: async (page = 1, limit = 10, filters?: ProductFilters) => {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
